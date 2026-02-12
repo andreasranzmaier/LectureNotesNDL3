@@ -35,3 +35,22 @@ uv sync
 
 - Keras 3.x with TensorFlow backend (or PyTorch/JAX)
 - See `pyproject.toml` for full dependency list
+
+## TensorFlow GPU Notes (RTX 50xx)
+
+If TensorFlow reports `Cannot dlopen some GPU libraries`, your CUDA wheel paths are not on `LD_LIBRARY_PATH`.
+This repository's devcontainer setup now auto-generates `/home/vscode/.venv/.cuda_env.sh` and sources it from `.bashrc`.
+
+Quick checks:
+
+```bash
+uv run python - <<'PY'
+import tensorflow as tf
+print(tf.__version__)
+print(tf.config.list_physical_devices("GPU"))
+print(tf.sysconfig.get_build_info().get("cuda_compute_capabilities"))
+PY
+```
+
+On RTX 5070 (compute capability `12.0a`), current `tf-nightly` may show a warning that kernels are JIT-compiled from PTX.
+This is expected until TensorFlow ships native `sm_120` binaries.
