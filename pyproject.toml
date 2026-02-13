@@ -19,5 +19,6 @@ dependencies = [
     "tensorflow-datasets>=4.9.9",
     "tf-nightly>=2.21.0.dev0",
     "torch>=2.8.0",
+    "visualkeras>=0.2.0",
     "xlstm>=2.0.4",
 ]

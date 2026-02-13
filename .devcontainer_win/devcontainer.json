@@ -1,17 +1,21 @@
 {
-  "name": "Python Dev (uv; mac/linux CPU)",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
+  "name": "Python Dev (uv; home venv)",
+  "build": { "dockerfile": "Dockerfile", "context": "." },
+
   "remoteUser": "vscode",
   "containerUser": "vscode",
   "overrideCommand": true,
   "hostRequirements": {
     "gpu": "optional"
   },
+  "runArgs": [
+    "--gpus=all"
+  ],
+
   "postCreateCommand": "bash -lc 'sed -i \"s/\\r$//\" .devcontainer/setup.sh .devcontainer/fix_perms.sh && bash .devcontainer/setup.sh'",
+
   "postStartCommand": "bash -lc 'bash .devcontainer/fix_perms.sh && bash .devcontainer/setup.sh'",
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -133,22 +137,27 @@
       "settings": {
         "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",
         "python.terminal.activateEnvironment": true,
-        "python.analysis.extraPaths": [
-          "${workspaceFolder}/src"
-        ],
+        "python.analysis.extraPaths": ["${workspaceFolder}/src"],
         "jupyter.jupyterServerType": "local"
       }
     }
   },
+
   "containerEnv": {
     "PYTHONPATH": "${containerWorkspaceFolder}/src",
     "UV_PROJECT_ENVIRONMENT": "/home/vscode/.venv",
-    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    "NVIDIA_VISIBLE_DEVICES": "all",
+    "NVIDIA_DRIVER_CAPABILITIES": "compute,utility",
+    "CUDA_HOME": "/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_nvcc",
+    "XLA_FLAGS": "--xla_gpu_cuda_data_dir=/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_nvcc",
+    "PATH": "/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_nvcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "LD_LIBRARY_PATH": "/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cublas/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_runtime/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cudnn/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cufft/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/curand/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cusolver/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cusparse/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/nccl/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/nvjitlink/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_cupti/lib:/home/vscode/.venv/lib/python3.11/site-packages/nvidia/cuda_nvcc/lib64"
   },
   "remoteEnv": {
     "VIRTUAL_ENV": "/home/vscode/.venv",
     "PATH": "/home/vscode/.venv/bin:${containerEnv:PATH}"
   },
+
   "mounts": [
     "source=pip_cache,target=/home/vscode/.cache/pip,type=volume",
     "source=uv_cache,target=/home/vscode/.cache/uv,type=volume"
